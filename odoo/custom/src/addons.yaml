@@ -1,0 +1,89 @@
+akretion-usability:
+  - account_usability
+  - base_usability
+  - base_partner_one2many_phone
+  - partner_tree_default_base
+  - partner_tree_default_contacts
+  - product_usability
+  - sale_usability
+l10n-ethiopia:
+  - l10n_et_tz
+partner-contact:
+  - partner_address_version
+  - partner_vat_unique
+odoo-profiles:
+  - profile_base
+  - profile_purchase
+product-attribute:
+  - product_category_product_link
+purchase-workflow:
+  - purchase_request
+  - purchase_request_tier_validation
+  - purchase_request_to_requisition
+  - purchase_requisition_auto_rfq
+  - purchase_requisition_tier_validation
+  - purchase_rfq_number
+  - purchase_tier_validation
+server-auth:
+  - auth_signup_verify_email
+  - auth_user_case_insensitive
+server-backend:
+  - base_user_role
+server-brand:
+  - disable_odoo_online
+  - remove_odoo_enterprise
+server-tools:
+  - auditlog
+  - base_view_inheritance_extension
+  - module_change_auto_install
+  - slow_statement_logger
+server-ux:
+  - base_optional_quick_create
+  - base_revision
+  - base_technical_features
+  - base_tier_validation
+  - base_tier_validation_correction
+  - base_tier_validation_formula
+  - base_tier_validation_forward
+  - base_tier_validation_report
+  - base_tier_validation_server_action
+  - base_tier_validation_waiting
+  - base_user_locale
+  - date_range
+  - date_range_account
+  - mass_editing
+  - multi_step_wizard
+social:
+  - mail_activity_board
+  - mail_activity_creator
+  - mail_activity_done
+  - mail_autosubscribe
+  - mail_debrand
+  - mail_restrict_send_button
+  - mail_tracking
+stock-logistics-warehouse:
+  - stock_request
+  - stock_request_purchase
+web:
+  - web_advanced_search
+  - web_dialog_size
+  - web_drop_target
+  - web_group_expand
+  - web_no_bubble
+  - web_listview_range_select
+  - web_notify
+  - web_refresher
+  - web_responsive
+  - web_timeline
+  - web_widget_char_size
+  - web_widget_open_tab
+website:
+  - website_odoo_debranding
+---
+# Enable demo ribbon only for devel and test environments
+ONLY:
+  PGDATABASE: # This environment variable must exist and be in the list
+    - devel
+    - test
+web:
+  - web_environment_ribbon
