@@ -1,0 +1,102 @@
+version: "2.4"
+
+services:
+  odoo:
+    extends:
+      file: common.yaml
+      service: odoo
+    restart: unless-stopped
+    env_file:
+      - .docker/odoo.env
+      - .docker/db-access.env
+    environment:
+      DB_FILTER: ""
+      DOODBA_ENVIRONMENT: "${DOODBA_ENVIRONMENT-prod}"
+      INITIAL_LANG: "en_US"
+    depends_on:
+      - db
+    networks:
+      default:
+      inverseproxy_shared:
+    labels:
+      doodba.domain.main: "purchase.demo.trevi.et"
+      traefik.enable: "true"
+      traefik.domain: "purchase.demo.trevi.et"
+      traefik.forbiddenCrawlers-0.frontend.headers.customResponseHeaders:
+        "X-Robots-Tag:noindex, nofollow"
+      traefik.forbiddenCrawlers-0.frontend.rule: Host:purchase.demo.trevi.et;Path:/web,/web/{anything:.*},/website/info,/website/info/{anything:.*}
+      traefik.main-0.frontend.rule: Host:purchase.demo.trevi.et
+      traefik.longpolling-0.frontend.rule: Host:purchase.demo.trevi.et;Path:/longpolling/{anything:.*}
+      traefik.longpolling-0.port: 8072
+      ? traefik.http.middlewares.demo-purchase-14-0-prod-buffering.buffering.retryExpression
+      : IsNetworkError() && Attempts() < 5
+      traefik.http.middlewares.demo-purchase-14-0-prod-compress.compress: "true"
+      ? traefik.http.middlewares.demo-purchase-14-0-prod-forbid-crawlers.headers.customResponseHeaders.X-Robots-Tag
+      : "noindex, nofollow"
+      traefik.http.middlewares.demo-purchase-14-0-prod-addSTS.headers.forceSTSHeader: "true"
+      traefik.http.middlewares.demo-purchase-14-0-prod-forceSecure.redirectScheme.scheme: https
+      traefik.http.middlewares.demo-purchase-14-0-prod-forceSecure.redirectScheme.permanent: "true"
+      traefik.http.services.demo-purchase-14-0-prod-main.loadbalancer.server.port: 8069
+      traefik.http.services.demo-purchase-14-0-prod-longpolling.loadbalancer.server.port: 8072
+      traefik.http.routers.demo-purchase-14-0-prod-main-0.rule: Host(`purchase.demo.trevi.et`)
+      traefik.http.routers.demo-purchase-14-0-prod-main-0.service: demo-purchase-14-0-prod-main
+      traefik.http.routers.demo-purchase-14-0-prod-main-0.middlewares:
+        demo-purchase-14-0-prod-addSTS, demo-purchase-14-0-prod-buffering,
+        demo-purchase-14-0-prod-compress, demo-purchase-14-0-prod-forceSecure
+      traefik.http.routers.demo-purchase-14-0-prod-main-secure-0.rule: Host(`purchase.demo.trevi.et`)
+      traefik.http.routers.demo-purchase-14-0-prod-main-secure-0.service: demo-purchase-14-0-prod-main
+      traefik.http.routers.demo-purchase-14-0-prod-main-secure-0.middlewares:
+        demo-purchase-14-0-prod-addSTS, demo-purchase-14-0-prod-buffering,
+        demo-purchase-14-0-prod-compress, demo-purchase-14-0-prod-forceSecure
+      traefik.http.routers.demo-purchase-14-0-prod-main-secure-0.tls: "true"
+      traefik.http.routers.demo-purchase-14-0-prod-main-secure-0.tls.certResolver: letsencrypt
+      traefik.http.routers.demo-purchase-14-0-prod-longpolling-0.rule:
+        Host(`purchase.demo.trevi.et`) && PathPrefix(`/longpolling/`)
+      traefik.http.routers.demo-purchase-14-0-prod-longpolling-0.service: demo-purchase-14-0-prod-longpolling
+      traefik.http.routers.demo-purchase-14-0-prod-longpolling-0.middlewares:
+        demo-purchase-14-0-prod-addSTS, demo-purchase-14-0-prod-forceSecure
+      traefik.http.routers.demo-purchase-14-0-prod-longpolling-secure-0.rule:
+        Host(`purchase.demo.trevi.et`) && PathPrefix(`/longpolling/`)
+      traefik.http.routers.demo-purchase-14-0-prod-longpolling-secure-0.service: demo-purchase-14-0-prod-longpolling
+      traefik.http.routers.demo-purchase-14-0-prod-longpolling-secure-0.middlewares:
+        demo-purchase-14-0-prod-addSTS, demo-purchase-14-0-prod-forceSecure
+      traefik.http.routers.demo-purchase-14-0-prod-longpolling-secure-0.tls: "true"
+      traefik.http.routers.demo-purchase-14-0-prod-longpolling-secure-0.tls.certResolver: letsencrypt
+      traefik.http.routers.demo-purchase-14-0-prod-forbiddenCrawlers-0.rule:
+        Host(`purchase.demo.trevi.et`) && (PathPrefix(`/web/`, `/website/info/`) ||
+        Path(`/web`, `/website/info`))
+      traefik.http.routers.demo-purchase-14-0-prod-forbiddenCrawlers-0.service: demo-purchase-14-0-prod-main
+      traefik.http.routers.demo-purchase-14-0-prod-forbiddenCrawlers-0.middlewares:
+        demo-purchase-14-0-prod-addSTS, demo-purchase-14-0-prod-buffering,
+        demo-purchase-14-0-prod-compress, demo-purchase-14-0-prod-forbid-crawlers,
+        demo-purchase-14-0-prod-forceSecure
+      traefik.http.routers.demo-purchase-14-0-prod-forbiddenCrawlers-secure-0.rule:
+        Host(`purchase.demo.trevi.et`) && (PathPrefix(`/web/`, `/website/info/`) ||
+        Path(`/web`, `/website/info`))
+      traefik.http.routers.demo-purchase-14-0-prod-forbiddenCrawlers-secure-0.service: demo-purchase-14-0-prod-main
+      ? traefik.http.routers.demo-purchase-14-0-prod-forbiddenCrawlers-secure-0.middlewares
+      : demo-purchase-14-0-prod-addSTS, demo-purchase-14-0-prod-buffering,
+        demo-purchase-14-0-prod-compress, demo-purchase-14-0-prod-forbid-crawlers,
+        demo-purchase-14-0-prod-forceSecure
+      traefik.http.routers.demo-purchase-14-0-prod-forbiddenCrawlers-secure-0.tls: "true"
+      traefik.http.routers.demo-purchase-14-0-prod-forbiddenCrawlers-secure-0.tls.certResolver: letsencrypt
+
+  db:
+    extends:
+      file: common.yaml
+      service: db
+    env_file:
+      - .docker/db-creation.env
+    restart: unless-stopped
+
+networks:
+  default:
+    driver_opts:
+      encrypted: 1
+
+  inverseproxy_shared:
+    external: true
+
+volumes:
+  filestore:
+  db:
